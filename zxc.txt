@@ -1,5 +1,5 @@
 Messages FUNCTION RN1,C2
-0,2/1,7
+0,1/1,4
 Types FUNCTION RN1,D3
 .33,1/.66,2/1,3
 CP FUNCTION P$Type,D3
@@ -11,43 +11,37 @@ Rand FUNCTION RN2,C2
 
 
 Clients MATRIX ,1,100
+INITIAL MCounter,100
 
 
 GENERATE 2
 
 SPLIT FN$Messages
-Label1 MATCH Label2
 
 ASSIGN Type,FN$Types
 ASSIGN CP_time,FN$CP
 ASSIGN Val,FN$FUNC_Value_message
 
-ASSIGN counter,100
-Loop_test1 TEST E MX$Clients(1,P$counter),1,Contin1
-LOOP counter,Loop_test1
-TRANSFER Kill_it
+TEST LE MCounter,2,Contin
+TERMINATE
 
-Contin1 ASSIGN counter,0
+Contin ASSIGN counter,0
 
 Set_sender_number ASSIGN counter+,1
 RMULT ,P$counter
 ASSIGN Sender,(FN$Rand\1)
 Test E MX$Clients(1,P$Sender),0,Set_sender_number 
 MSAVEVALUE Clients,1,P$Sender,1
+SAVEVALUE MCounter-,1
 
 
-ASSIGN counter,100
-Loop_test2 TEST E MX$Clients(1,P$counter),1,Contin2
-LOOP counter,Loop_test2
-MSAVEVALUE Clients,1,P$Sender,0
-TRANSFER Kill_it
-
-Contin2 ASSIGN counter,0
+ASSIGN counter,0
 Set_receiver_number ASSIGN counter+,1
 RMULT ,P$counter
 ASSIGN Receiver,(FN$Rand\1)
 Test E MX$Clients(1,P$Receiver),0,Set_receiver_number
 MSAVEVALUE Clients,1,P$Receiver,1
+SAVEVALUE MCounter-,1
 
 
 TEST G P$Sender,P$Receiver,Param2
@@ -61,17 +55,17 @@ TRANSFER ,Prog
 Param2 ASSIGN Delivery_time,((P$Receiver-P$Sender)#0.005+P$Val)
 
 
-Prog PRIORITY 100
-Label2 MATCH Label1
-QUEUE QBUS
+Prog QUEUE QBUS
 SEIZE BUS 
 DEPART QBUS 
 ADVANCE P$Delivery_time 
 RELEASE BUS
-MSAVEVALUE Clients,1,P$Sender,0 
+MSAVEVALUE Clients,1,P$Sender,0
+SAVEVALUE MCounter+,1
 ADVANCE P$CP_time 
 Test E MX$Clients(1,P$Sender),0
-MSAVEVALUE Clients,1,P$Sender,1 
+MSAVEVALUE Clients,1,P$Sender,1
+SAVEVALUE MCounter-,1
 QUEUE QBUS 
 SEIZE BUS
 DEPART QBUS
@@ -79,5 +73,6 @@ ADVANCE P$Delivery_time
 RELEASE BUS
 MSAVEVALUE Clients,1,P$Receiver,0 
 MSAVEVALUE Clients,1,P$Sender,0
-Kill_it TERMINATE 1
+SAVEVALUE MCounter+,2
+TERMINATE 1
 START 10
