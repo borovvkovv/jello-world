@@ -23,11 +23,11 @@ ASSIGN CP_time,FN$CP
 ASSIGN Val,FN$FUNC_Value_message
 
 ASSIGN counter,100
-Loop_test TEST E MX$Clients(1,P$counter),1,Contin
-LOOP counter,Loop_test
+Loop_test1 TEST E MX$Clients(1,P$counter),1,Contin1
+LOOP counter,Loop_test1
 TRANSFER Kill_it
 
-Contin ASSIGN counter,0
+Contin1 ASSIGN counter,0
 
 Set_sender_number ASSIGN counter+,1
 RMULT ,P$counter
@@ -37,12 +37,12 @@ MSAVEVALUE Clients,1,P$Sender,1
 
 
 ASSIGN counter,100
-Loop_test TEST E MX$Clients(1,P$counter),1,Contin
-LOOP counter,Loop_test
+Loop_test2 TEST E MX$Clients(1,P$counter),1,Contin2
+LOOP counter,Loop_test2
 MSAVEVALUE Clients,1,P$Sender,0
 TRANSFER Kill_it
 
-ASSIGN counter,0
+Contin2 ASSIGN counter,0
 Set_receiver_number ASSIGN counter+,1
 RMULT ,P$counter
 ASSIGN Receiver,(FN$Rand\1)
