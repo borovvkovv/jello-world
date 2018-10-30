@@ -7,33 +7,47 @@ CP FUNCTION P$Type,D3
 FUNC_Value_message FUNCTION P$Type,D3
 1,4/2,9/3,16
 Rand FUNCTION RN2,C2
-0,1/1,100
+0,1/1,101
 
 
 Clients MATRIX ,1,100
 
-GENERATE	2
+
+GENERATE2
+
 
 SPLIT FN$Messages
 ASSIGN Type,FN$Types
 ASSIGN CP_time,FN$CP
 ASSIGN Val,FN$FUNC_Value_message
+ASSIGN i,0
 
-Set_sender_number	ASSIGN Sender,(FN$Rand\1)
+
+Set_sender_number ASSIGN i+,1
+RMULT ,P$i
+ASSIGN Sender,(FN$Rand\1)
 Test E MX$Clients(1,P$Sender),0,Set_sender_number 
 MSAVEVALUE Clients,1,P$Sender,1
 
-Set_receiver_number ASSIGN Receiver,(FN$Rand\1)
+
+ASSIGN i,0
+Set_receiver_number ASSIGN i+,1
+RMULT ,P$i
+ASSIGN Receiver,(FN$Rand\1)
 Test E MX$Clients(1,P$Receiver),0,Set_receiver_number
 MSAVEVALUE Clients,1,P$Receiver,1
 
+
 TEST G P$Sender,P$Receiver,Param2
+
 
 ASSIGN Delivery_time,((P$Sender-P$Receiver)#0.005+P$Val)
 TRANSFER ,Prog
 
 
+
 Param2 ASSIGN Delivery_time,((P$Receiver-P$Sender)#0.005+P$Val)
+
 
 Prog QUEUE QBUS
 SEIZE BUS 
