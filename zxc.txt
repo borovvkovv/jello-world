@@ -13,26 +13,32 @@ Rand FUNCTION RN2,C2
 Clients MATRIX ,1,100
 
 
-GENERATE2
+GENERATE 2
 
 
 SPLIT FN$Messages
 ASSIGN Type,FN$Types
 ASSIGN CP_time,FN$CP
 ASSIGN Val,FN$FUNC_Value_message
-ASSIGN i,0
+
+ASSIGN counter,100
+Loop_test TEST EMX$Clients(1,P$Counter),1,Contin
+LOOP counter,Loop_test
+TRANSFER Kill_it
+
+Contin ASSIGN counter,0
 
 
-Set_sender_number ASSIGN i+,1
-RMULT ,P$i
+Set_sender_number ASSIGN counter+,1
+RMULT ,P$counter
 ASSIGN Sender,(FN$Rand\1)
 Test E MX$Clients(1,P$Sender),0,Set_sender_number 
 MSAVEVALUE Clients,1,P$Sender,1
 
 
-ASSIGN i,0
-Set_receiver_number ASSIGN i+,1
-RMULT ,P$i
+ASSIGN counter,0
+Set_receiver_number ASSIGN counter+,1
+RMULT ,P$counter
 ASSIGN Receiver,(FN$Rand\1)
 Test E MX$Clients(1,P$Receiver),0,Set_receiver_number
 MSAVEVALUE Clients,1,P$Receiver,1
@@ -65,5 +71,5 @@ ADVANCE P$Delivery_time
 RELEASE BUS
 MSAVEVALUE Clients,1,P$Receiver,0 
 MSAVEVALUE Clients,1,P$Sender,0
-TERMINATE 1
-START10
+Kill_it TERMINATE 1
+START 10
